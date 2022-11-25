@@ -1,5 +1,7 @@
 # LAMD_stack_containers
 
+*Yes, I know it is called LAMP*
+
 A backend services with Content Management Program as Drupal with MariaDB running on Apache using Linux.
 
 The main goal is to create a stack of containers on Linux OS with the following services:
