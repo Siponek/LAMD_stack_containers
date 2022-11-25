@@ -1,0 +1,42 @@
+services:
+ cms:
+  build: 
+   context: ./drupal
+   dockerfile: Dockerfile
+   args:
+    COMPOSER_VERSION: 2.4.4
+    VERSION: 9.4.8
+  image: drupal:9.4.8
+  hostname: drupal
+  environment:
+   DB_HOST: db
+   DB_NAME: drupal
+   DB_USER: drupal
+   DB_PASSWORD: password
+   DRUPAL_ADMIN: admin
+   DRUPAL_ADMIN_PASS: admin
+   DRUPAL_ADMIN_EMAIL: admin@example.com
+   DRUPAL_SITE_NAME: My new DRUPAL site
+  volumes:
+   # use an host volume pointing to ./config and mounted to /config
+  ports:
+   - "8080:80"
+  depends_on:
+   - db
+  networks:
+   # configure networking
+
+ db:
+  image: mariadb:10.9
+  hostname: db
+  environment:
+   # cf. https://hub.docker.com/_/mariadb
+   MYSQL_ROOT_PASSWORD: secret
+   MYSQL_DATABASE: drupal
+   MYSQL_USER: drupal
+   MYSQL_PASSWORD: password
+  networks:
+    # configure networking
+
+networks:
+  # configure networks
