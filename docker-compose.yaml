@@ -4,39 +4,64 @@ services:
    context: ./drupal
    dockerfile: Dockerfile
    args:
-    COMPOSER_VERSION: 2.4.4
-    VERSION: 9.4.8
-  image: drupal:9.4.8
+    COMPOSER_VERSION: ${COMPOSER_VERSION}
+    DRUPAL_VERSION: ${DRUPAL_VERSION}
+  image: drupal:${DRUPAL_VERSION}
   hostname: drupal
-  environment:
-   DB_HOST: db
-   DB_NAME: drupal
-   DB_USER: drupal
-   DB_PASSWORD: password
-   DRUPAL_ADMIN: admin
-   DRUPAL_ADMIN_PASS: admin
-   DRUPAL_ADMIN_EMAIL: admin@example.com
-   DRUPAL_SITE_NAME: My new DRUPAL site
+  env_file:
+   - .env.prod
+  # Commment the section
+  
+  # environment:
+  #  DB_HOST: ${ENV_DB_HOST}
+  #  DB_NAME: ${ENV_DB_NAME}
+  #  DB_USER: ${ENV_DB_USER}
+  #  DB_PASSWORD: ${ENV_DB_PASSWORD}
+  #  DRUPAL_ADMIN: ${ENV_DRUPAL_ADMIN}
+  #  DRUPAL_ADMIN_PASS: ${ENV_DRUPAL_ADMIN_PASS}
+  #  DRUPAL_ADMIN_EMAIL: ${ENV_DRUPAL_ADMIN_EMAIL}
+  #  DRUPAL_SITE_NAME: ${ENV_DRUPAL_SITE_NAME}
   volumes:
    # use an host volume pointing to ./config and mounted to /config
+    - ./config:/config
   ports:
    - "8080:80"
   depends_on:
    - db
   networks:
-   # configure networking
-
+  #  configure networking
+    extnet:
+      # name: drupal_network
+      ipv4_address: 192.168.100.2
+    intnet:
+      ipv4_address: 192.168.200.2
  db:
   image: mariadb:10.9
   hostname: db
   environment:
    # cf. https://hub.docker.com/_/mariadb
-   MYSQL_ROOT_PASSWORD: secret
-   MYSQL_DATABASE: drupal
-   MYSQL_USER: drupal
-   MYSQL_PASSWORD: password
+   MARIADB_ROOT_PASSWORD: secret
+   MARIADB_DATABASE: drupal
+   MARIADB_USER: drupal
+   MARIADB_PASSWORD: password
   networks:
-    # configure networking
-
+   # configure networking
+    intnet:
+      # name: mariadb_network
+      ipv4_address: 192.168.200.3
 networks:
-  # configure networks
+  # configure networking
+    extnet:
+      driver: bridge
+      #setting the parameters for the bridge network
+      ipam:
+        driver: default
+        config:
+        - subnet: 192.168.100.0/24
+    intnet:
+      driver: bridge
+      #setting the parameters for the bridge network
+      ipam:
+        driver: default
+        config:
+        - subnet: 192.168.200.0/24
